@@ -1,5 +1,7 @@
 package lambda.school.javaordersproject.models;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import javax.persistence.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -10,31 +12,32 @@ public class Customer
 {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private long custcode;
+    @Column(unique = true, nullable = false)
+    private long custcode; // primary key
 
     @Column(nullable = false)
     private String custname;
+
     private String custcity;
     private String workingarea;
     private String custcountry;
     private String grade;
     private double openingamt;
     private double receiveamt;
-    private double pamentamt;
+    private double paymentamt;
     private double outstandingamt;
     private String phone;
 
     @ManyToOne
     @JoinColumn(name = "agentcode", nullable = false)
+    @JsonIgnoreProperties(value = "customers", allowSetters = true)
     private Agent agent;
 
-    @OneToMany(mappedBy = "customer",
-            cascade = CascadeType.ALL,
-            orphanRemoval = true)
+    @OneToMany(mappedBy = "customer", cascade = CascadeType.ALL, orphanRemoval = true)
+    @JsonIgnoreProperties(value = "customer", allowSetters = true)
     private List<Order> orders = new ArrayList<>();
 
-    public Customer()
-    {
+    public Customer(){
     }
 
     public Customer(
@@ -45,7 +48,7 @@ public class Customer
             String grade,
             double openingamt,
             double receiveamt,
-            double pamentamt,
+            double paymentamt,
             double outstandingamt,
             String phone,
             Agent agent)
@@ -57,10 +60,26 @@ public class Customer
         this.grade = grade;
         this.openingamt = openingamt;
         this.receiveamt = receiveamt;
-        this.pamentamt = pamentamt;
+        this.paymentamt = paymentamt;
         this.outstandingamt = outstandingamt;
         this.phone = phone;
         this.agent = agent;
+    }
+
+    public Agent getAgent() {
+        return agent;
+    }
+
+    public void setAgent(Agent agent) {
+        this.agent = agent;
+    }
+
+    public List<Order> getOrders() {
+        return orders;
+    }
+
+    public void setOrders(List<Order> orders) {
+        this.orders = orders;
     }
 
     public long getCustcode()
@@ -143,14 +162,14 @@ public class Customer
         this.receiveamt = receiveamt;
     }
 
-    public double getPamentamt()
+    public double getPaymentamt()
     {
-        return pamentamt;
+        return paymentamt;
     }
 
-    public void setPamentamt(double pamentamt)
+    public void setPaymentamt(double paymentamt)
     {
-        this.pamentamt = pamentamt;
+        this.paymentamt = paymentamt;
     }
 
     public double getOutstandingamt()
@@ -171,15 +190,5 @@ public class Customer
     public void setPhone(String phone)
     {
         this.phone = phone;
-    }
-
-    public Agent getAgent()
-    {
-        return agent;
-    }
-
-    public void setAgent(Agent agent)
-    {
-        this.agent = agent;
     }
 }
